@@ -35,14 +35,15 @@ For **10 posts**, with an average of **5 comments per post**, this results in:
 - **~10 index lookups** for posts  
 - **~10 lookups** for user details  
 - **~10 lookups** for images  
+- **~10 lookups** for counting reactions 
 - **~50 lookups** for comments + **50 lookups** for comment users  
 
-Total operations: **~130 index lookups per feed generation**  
+Total operations: **~140 index lookups per feed generation**  
 
 #### **Scaling Problem**  
 With **10,000 DAUs**, each generating **60 feed requests per hour (10 posts per minute)**:  
 - **Queries per second:** `(10,000 * 60) / 3600 ≈ 166.67 QPS`  
-- **Index lookups per second:** `16.67 * 130 ≈ 21,667 lookups/sec`  
+- **Index lookups per second:** `166.67 * 140 ≈ 23,334 lookups/sec`  
 
 This creates significant **latency and database load**, even with indexing.  
 
@@ -91,11 +92,11 @@ MongoDB allows storing all related data (posts, user details, images, comments) 
 ### **Performance Benefits**  
 1. **Single Document Fetch** → **O(1)** (assuming indexed `_id` or sharding).  
 2. **No Joins** → All data is pre-embedded.  
-3. **Reduced Query Load** → Instead of 130 lookups, just **1 document read per feed request**.  
+3. **Reduced Query Load** → Instead of 140 lookups, just **1 document read per feed request**.  
 
 #### **Scaling Advantage**  
 - **10,000 DAUs × 60 requests/hour = ~166.67 QPS**  
-- **MongoDB handles ~166.67 reads/sec** (vs. SQL's 21,667 lookups/sec).  
+- **MongoDB handles ~166.67 reads/sec** (vs. SQL's 23,334 lookups/sec).  
 
 ### **Additional Optimizations**  
 - **Caching** (Redis) for frequently accessed posts.  
